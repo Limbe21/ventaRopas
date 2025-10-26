@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Venta{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Editar Venta</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="producto_id" class="form-label">Producto</label>
+                            <select class="form-select" id="producto_id" name="producto_id" required>
+                                <option value="">Seleccionar producto</option>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" 
+                                    {% if producto.id == venta.producto_id %}selected{% endif %}>
+                                    {{ producto.nombre }} - ${{ producto.precio }} (Stock: {{ producto.cantidad }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cliente" class="form-label">Cliente</label>
+                            <input type="text" class="form-control" id="cliente" name="cliente" 
+                                   value="{{ venta.cliente }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cantidad_vendida" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="cantidad_vendida" 
+                                   name="cantidad_vendida" value="{{ venta.cantidad_vendida }}" 
+                                   min="1" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pago" class="form-label">Pago Recibido</label>
+                            <input type="number" class="form-control" id="pago" name="pago" 
+                                   value="{{ venta.pago }}" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Total Calculado: $<span id="total_calculado">0.00</span></label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Falta por Pagar: $<span id="falta_calculada">0.00</span></label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Actualizar Venta</button>
+                            <a href="{{ url_for('ventas.listar') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cálculo automático de total y falta
+document.addEventListener('DOMContentLoaded', function() {
+    function calcularTotales() {
+        const productoSelect = document.getElementById('producto_id');
+        const cantidadInput = document.getElementById('cantidad_vendida');
+        const pagoInput = document.getElementById('pago');
+        const totalSpan = document.getElementById('total_calculado');
+        const faltaSpan = document.getElementById('falta_calculada');
+
+        if (productoSelect.value && cantidadInput.value) {
+            // Extraer el precio del texto de la opción seleccionada
+            const optionText = productoSelect.options[productoSelect.selectedIndex].text;
+            const precioMatch = optionText.match(/\$([\d.]+)/);
+            const precio = precioMatch ? parseFloat(precioMatch[1]) : 0;
+            
+            const cantidad = parseInt(cantidadInput.value);
+            const pago = parseFloat(pagoInput.value) || 0;
+            
+            const total = precio * cantidad;
+            const falta = total - pago;
+
+            totalSpan.textContent = total.toFixed(2);
+            faltaSpan.textContent = falta.toFixed(2);
+        }
+    }
+
+    document.getElementById('producto_id').addEventListener('change', calcularTotales);
+    document.getElementById('cantidad_vendida').addEventListener('input', calcularTotales);
+    document.getElementById('pago').addEventListener('input', calcularTotales);
+
+    // Calcular al cargar la página
+    calcularTotales();
+});
+</script>
+{% endblock %}

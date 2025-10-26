@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Crear Entrega</h1>
+<form method="POST">
+    <div class="mb-3">
+        <label for="venta_id">Venta</label>
+        <select class="form-control" name="venta_id" required>
+            {% for v in ventas %}
+            <option value="{{ v.id }}">{{ v.cliente }} - {{ v.producto_nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="direccion">Dirección</label>
+        <input type="text" class="form-control" name="direccion" required>
+    </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="es_envio" id="es_envio">
+        <label class="form-check-label" for="es_envio">Es envío</label>
+    </div>
+    <button type="submit" class="btn btn-success">Crear</button>
+</form>
+{% endblock %}

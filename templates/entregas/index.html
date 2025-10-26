@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Entregas</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablas.css') }}">
+<!-- Formulario de filtro y descarga -->
+<form class="row g-3 mb-4" method="get" action="{{ url_for('entregas.descargar') }}">
+    <div class="col-md-3">
+        <label for="fecha_inicio" class="form-label">Fecha inicio</label>
+        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio">
+    </div>
+    <div class="col-md-3">
+        <label for="fecha_fin" class="form-label">Fecha fin</label>
+        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+    </div>
+    <div class="col-md-3">
+        <label for="formato" class="form-label">Formato</label>
+        <select class="form-select" id="formato" name="formato">
+            <option value="pdf" selected>PDF</option>
+            <option value="word">Excel/Word</option>
+        </select>
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-download"></i> Descargar
+        </button>
+    </div>
+</form>
+
+<!-- Tabla de entregas -->
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Dirección</th>
+            <th>Envío</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in entregas %}
+        <tr>
+            <td>{{ e.id }}</td>
+            <td>{{ e.cliente }}</td>
+            <td>{{ e.producto_id }}</td>
+            <td>{{ e.direccion }}</td>
+            <td>{{ 'Sí' if e.es_envio else 'No' }}</td>
+            <td>{{ e.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+                <a href="{{ url_for('entregas.editar', entrega_id=e.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{{ url_for('entregas.eliminar', entrega_id=e.id) }}" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

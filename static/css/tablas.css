@@ -1,0 +1,155 @@
+/* ===================== TABLA DE VENTAS FEMENINA FUTURISTA ===================== */
+
+/* Variables de color */
+:root {
+    --primary-color: #f472b6; /* rosa pastel */
+    --secondary-color: #a78bfa; /* lila suave */
+    --accent-success: #34d399; /* verde suave */
+    --accent-warning: #fcd34d; /* amarillo pastel */
+    --accent-danger: #f87171; /* rojo suave */
+    --text-dark: #1f2937;
+    --bg-light: rgba(255,255,255,0.9);
+    --glass-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    --neon-glow: 0 0 6px rgba(255,255,255,0.2), 0 0 12px var(--secondary-color), 0 0 16px var(--primary-color);
+}
+
+/* Tabla principal */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--bg-light);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glass-shadow);
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+}
+
+/* Encabezado */
+.table thead {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Celdas */
+.table th, .table td {
+    padding: 1rem 1.2rem;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+}
+
+/* Filas */
+.table tbody tr {
+    background: rgba(255,255,255,0.85);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+}
+
+.table tbody tr:hover {
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--primary-color);
+    transform: translateY(-2px) scale(1.01);
+}
+
+/* Filas alternadas */
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(255,255,255,0.9);
+}
+.table-striped tbody tr:nth-of-type(even) {
+    background: rgba(255,255,255,0.95);
+}
+
+/* Badges de estado de venta */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1), 0 0 4px var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.bg-success { 
+    background: linear-gradient(135deg, var(--accent-success), #6ee7b7) !important;
+    box-shadow: 0 0 10px var(--accent-success), 0 0 16px #6ee7b7;
+}
+.bg-warning { 
+    background: linear-gradient(135deg, var(--accent-warning), #fde68a) !important;
+    color: #1f2937 !important;
+    box-shadow: 0 0 10px var(--accent-warning), 0 0 16px #fde68a;
+}
+.bg-danger { 
+    background: linear-gradient(135deg, var(--accent-danger), #fca5a5) !important;
+    box-shadow: 0 0 10px var(--accent-danger), 0 0 16px #fca5a5;
+}
+
+/* Botones futuristas */
+.table .btn {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 8px var(--primary-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.table .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+    transform: skewX(-25deg);
+    transition: all 0.5s ease;
+}
+
+.table .btn:hover::before {
+    left: 120%;
+}
+
+.table .btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1), var(--neon-glow);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .table th, .table td {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    .table .btn {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.6rem;
+    }
+}
+
+/* Efecto neon pulse para badges */
+.badge {
+    animation: neon-pulse 2s infinite;
+}
+
+@keyframes neon-pulse {
+    0% { box-shadow: 0 0 6px var(--accent-warning), 0 0 12px var(--primary-color); }
+    50% { box-shadow: 0 0 10px var(--accent-warning), 0 0 20px var(--primary-color); }
+    100% { box-shadow: 0 0 6px var(--accent-warning), 0 0 12px var(--primary-color); }
+}

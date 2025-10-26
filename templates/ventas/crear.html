@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Registrar Venta</h4>
+            <a href="{{ url_for('ventas.listar') }}" class="btn btn-light btn-sm">← Volver</a>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('ventas.crear') }}">
+                <!-- Selección de producto -->
+                <div class="mb-3">
+                    <label for="producto_id" class="form-label">Producto</label>
+                    <select name="producto_id" id="producto_id" class="form-select" required onchange="mostrarDetalle(); calcularTotal();">
+                        <option value="">Seleccione un producto</option>
+                        {% for producto in productos %}
+                            <option value="{{ producto.id }}" 
+                                data-precio="{{ producto.precio }}"
+                                data-stock="{{ producto.cantidad }}"
+                                data-talla="{{ producto.talla }}"
+                                data-categoria="{{ producto.categoria }}"
+                                {% if producto_id_preseleccionado == producto.id %}selected{% endif %}>
+                                {{ producto.nombre }} - Stock: {{ producto.cantidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Vista previa del producto seleccionado -->
+                <div id="detalleProducto" class="border rounded p-3 mb-4 bg-light d-none">
+                    <h5 class="text-primary mb-3">Detalles del Producto</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Precio:</strong> $<span id="detallePrecio">-</span></li>
+                        <li class="list-group-item"><strong>Stock disponible:</strong> <span id="detalleStock">-</span></li>
+                        <li class="list-group-item"><strong>Talla:</strong> <span id="detalleTalla">-</span></li>
+                        <li class="list-group-item"><strong>Categoría:</strong> <span id="detalleCategoria">-</span></li>
+                    </ul>
+                </div>
+
+                <!-- Datos del cliente -->
+                <div class="mb-3">
+                    <label for="cliente" class="form-label">Cliente</label>
+                    <input type="text" name="cliente" id="cliente" class="form-control" placeholder="Nombre del cliente" required>
+                </div>
+
+                <!-- Cantidad -->
+                <div class="mb-3">
+                    <label for="cantidad_vendida" class="form-label">Cantidad Vendida</label>
+                    <input type="number" name="cantidad_vendida" id="cantidad_vendida" class="form-control" min="1" required onchange="calcularTotal();">
+                </div>
+
+                <!-- Total (solo lectura) -->
+                <div class="mb-3">
+                    <label for="total" class="form-label">Total</label>
+                    <input type="number" step="0.01" name="total" id="total" class="form-control" readonly>
+                </div>
+
+                <!-- Pago -->
+                <div class="mb-3">
+                    <label for="pago" class="form-label">Pago</label>
+                    <input type="number" step="0.01" name="pago" id="pago" class="form-control" required onchange="calcularFalta();">
+                </div>
+
+                <!-- Falta (solo lectura) -->
+                <div class="mb-3">
+                    <label for="falta" class="form-label">Falta</label>
+                    <input type="number" step="0.01" name="falta" id="falta" class="form-control" readonly>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4">Registrar Venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function mostrarDetalle() {
+    const select = document.getElementById('producto_id');
+    const detalle = document.getElementById('detalleProducto');
+    const opcion = select.options[select.selectedIndex];
+
+    if (opcion.value) {
+        document.getElementById('detallePrecio').innerText = parseFloat(opcion.getAttribute('data-precio')).toFixed(2);
+        document.getElementById('detalleStock').innerText = opcion.getAttribute('data-stock');
+        document.getElementById('detalleTalla').innerText = opcion.getAttribute('data-talla') || 'N/A';
+        document.getElementById('detalleCategoria').innerText = opcion.getAttribute('data-categoria') || 'N/A';
+        detalle.classList.remove('d-none');
+    } else {
+        detalle.classList.add('d-none');
+        document.getElementById('total').value = '';
+        document.getElementById('falta').value = '';
+    }
+}
+
+function calcularTotal() {
+    const select = document.getElementById('producto_id');
+    const cantidad = parseInt(document.getElementById('cantidad_vendida').value) || 0;
+
+    if (!select.value) return;
+
+    const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio')) || 0;
+    const total = cantidad * precio;
+
+    document.getElementById('total').value = total.toFixed(2);
+
+    calcularFalta();
+}
+
+function calcularFalta() {
+    const total = parseFloat(document.getElementById('total').value) || 0;
+    const pago = parseFloat(document.getElementById('pago').value) || 0;
+    const falta = total - pago;
+    document.getElementById('falta').value = falta.toFixed(2);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    mostrarDetalle();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tablas.css') }}">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Historial de Ventas</h2>
+    <a href="{{ url_for('ventas.crear') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Nueva Venta
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Cliente</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Pagado</th>
+                <th>Falta</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>  <!-- COLUMNA NUEVA -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.id }}</td>
+                <td>{{ venta.producto_nombre or 'Producto eliminado' }}</td>
+                <td>{{ venta.cliente }}</td>
+                <td>{{ venta.cantidad_vendida }}</td>
+                <td>${{ "%.2f"|format(venta.total) }}</td>
+                <td>${{ "%.2f"|format(venta.pago) }}</td>
+                <td>
+                    <span class="badge {% if venta.falta == 0 %}bg-success{% else %}bg-danger{% endif %}">
+                        ${{ "%.2f"|format(venta.falta) }}
+                    </span>
+                </td>
+                <td>{{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    {% if venta.entregado %}
+                        <span class="badge bg-success">Entregado</span>
+                    {% else %}
+                        <span class="badge bg-warning">Pendiente</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- BOTÓN EDITAR -->
+                    <a href="{{ url_for('ventas.editar', id=venta.id) }}" class="btn btn-warning btn-sm mb-1" title="Editar venta">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    
+                    <!-- BOTÓN ENTREGADO (solo si no está entregado) -->
+                    {% if not venta.entregado %}
+                    <a href="{{ url_for('ventas.entregado', id=venta.id) }}" class="btn btn-success btn-sm mb-1" title="Marcar como entregado">
+                        <i class="fas fa-check"></i> Entregar
+                    </a>
+                    {% endif %}
+                    
+                    <!-- BOTÓN ELIMINAR -->
+                    <form action="{{ url_for('ventas.eliminar', id=venta.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" 
+                                onclick="return confirm('¿Estás seguro de eliminar esta venta?')"
+                                title="Eliminar venta">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
+<!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
+<div class="container-fluid">
+    <!-- Tu contenido normal del dashboard aquí -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Total de Productos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total de Productos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_productos }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ventas de Hoy -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Ventas de Hoy</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ventas_hoy }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingresos de Hoy -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Ingresos de Hoy</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "%.2f"|format(ingresos_hoy) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos con Stock Bajo -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Stock Bajo</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ productos_bajo_stock|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row">
+        <!-- Ingresos de los últimos 7 días -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ingresos últimos 7 días</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="ingresosDiariosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingresos de los últimos 6 meses -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ingresos últimos 6 meses</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="ingresosMensualesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Productos con Stock Bajo</h6>
+                </div>
+                <div class="card-body">
+                    {% if productos_bajo_stock %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Stock Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for producto in productos_bajo_stock %}
+                                    <tr>
+                                        <td>{{ producto.nombre }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if producto.cantidad == 0 %}danger{% else %}warning{% endif %}">
+                                                {{ producto.cantidad }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No hay productos con stock bajo</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Resumen General</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p class="mb-1"><strong>Total Productos:</strong></p>
+                            <p class="mb-1"><strong>Total Ventas:</strong></p>
+                            <p class="mb-1"><strong>Ingresos Totales:</strong></p>
+                            <p class="mb-1"><strong>Ventas Hoy:</strong></p>
+                            <p class="mb-1"><strong>Ingresos Hoy:</strong></p>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <p class="mb-1">{{ total_productos }}</p>
+                            <p class="mb-1">{{ total_ventas }}</p>
+                            <p class="mb-1">${{ "%.2f"|format(ingresos_totales) }}</p>
+                            <p class="mb-1">{{ ventas_hoy }}</p>
+                            <p class="mb-1">${{ "%.2f"|format(ingresos_hoy) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTAS DEL SISTEMA (SOLO ALERTAS) -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bell me-2"></i>Alertas del Sistema
+                    </h6>
+                    <span class="badge bg-danger">{{ stats_alertas.total_alertas }}</span>
+                </div>
+                <div class="card-body">
+                    {% if alertas %}
+                        <div class="alertas-container">
+                            {% for alerta in alertas %}
+                            <div class="alert alert-{{ alerta.tipo }} alert-dismissible fade show mb-3" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas {{ alerta.icono }} me-3 fa-lg"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="alert-heading mb-1">{{ alerta.titulo }}</h6>
+                                        <p class="mb-1">{{ alerta.mensaje }}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>{{ alerta.fecha }}
+                                        </small>
+                                    </div>
+                                    <div class="ms-3">
+                                        <a href="{{ url_for('ventas.listar') }}" 
+                                           class="btn btn-sm btn-outline-{{ alerta.tipo }}">
+                                            <i class="fas fa-eye"></i> Ver Ventas
+                                        </a>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                            <p class="mb-0">¡No hay alertas pendientes!</p>
+                            <small>Todas las ventas están al día</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Incluir el archivo JavaScript externo -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<!-- Inicializar el dashboard con los datos de Flask -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Pasar los datos de Flask al JavaScript
+    const diasLabels = {{ dias_json|safe }};
+    const ingresosDiarios = {{ ingresos_diarios_json|safe }};
+    const mesesLabels = {{ meses_json|safe }};
+    const ingresosMensuales = {{ ingresos_mensuales_json|safe }};
+    
+    // Inicializar todo el dashboard
+    inicializarDashboard(diasLabels, ingresosDiarios, mesesLabels, ingresosMensuales);
+});
+</script>
+{% endblock %}

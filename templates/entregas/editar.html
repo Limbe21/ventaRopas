@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Editar Entrega #{{ entrega.id }}</h1>
+<form method="POST">
+    <div class="mb-3">
+        <label for="direccion">Dirección</label>
+        <input type="text" class="form-control" name="direccion" value="{{ entrega.direccion }}" required>
+    </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="es_envio" id="es_envio" {% if entrega.es_envio %}checked{% endif %}>
+        <label class="form-check-label" for="es_envio">Es envío</label>
+    </div>
+    <button type="submit" class="btn btn-success">Actualizar</button>
+</form>
+{% endblock %}
